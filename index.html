@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head profile="http://www.w3.org/2005/10/profile">
+  <link rel="icon"
+    type="image/jpg"
+    href="./src/img/favicon.jpg"/>
+  <link rel="stylesheet" href="style.css">
+  <title>Mekan-X</title>
+  <meta charset="utf-8">
+</head>
+
+<body>
+
+  <div id="main"></div>
+
+  <div id="login" style="display: none">
+    <label for="user">User: </label><input id="user" type="text" name="user"><br />
+    <label for="pass">Pass: </label><input id="pass" type="password" name="pass"><br />
+    <button onclick='login(event)'>Log In</button><button onclick='signin(event)'>Sign In</button>
+  </div>
+  <div id="256key"></div>
+  <div id="userIV"></div>
+
+  <script src="sha1.js"></script>
+  <script src="pbkdf2.js"></script>
+  <script src="page.js"></script>
+  <script src="script.js"></script>
+
+</body>
+
+</html>
