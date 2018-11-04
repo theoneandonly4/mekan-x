@@ -1,34 +1,20 @@
+/* Mekan-X main script
+* By Pierre-Etienne ALBINET
+* Started 20181026
+* Changed 20181104
+*
+* Acknowledgments:
+* > Usage of the pbkdf2 function by Parvez Anandam (BSD License) which uses the sha1 by Paul Johnston
+*
+*/
+
 main()
 
 function main () {
-  data()
   cookies()
   display()
 }
 
-function data() {
-  if (!localStorage.users) {
-    users = []
-    localStorage.users = JSON.stringify(users)
-  }
-  else {
-    users = JSON.parse(localStorage.users)
-  }
-  if (!localStorage.items) {
-    items = []
-    localStorage.items = JSON.stringify(items)
-  }
-  else {
-    items = JSON.parse(localStorage.items)
-  }
-  if (!localStorage.links) {
-    links = []
-    localStorage.links = JSON.stringify(links)
-  }
-  else {
-    links = JSON.parse(localStorage.links)
-  }
-}
 
 function cookies() {
   var user = getCookie('user')
@@ -40,48 +26,22 @@ function cookies() {
   }
 }
 
-function getCookie(cname) {
-    var name = cname + '='
-    var decodedCookie = decodeURIComponent(document.cookie)
-    var ca = decodedCookie.split(';')
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1)
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length)
-        }
-    }
-    return ''
-}
+function signin() {
+  var user = document.getElementById('user').value
+  var pass = document.getElementById('pass').value
 
-function setCookie(cname, cvalue, exdays) {
-  var d = new Date()
-  var expiry
-  if (!exdays) {
-    document.cookie = cname + '=' + cvalue + ';path=/'
-  }
-  else {
-    d.setTime(d.getTime() + (exdays*24*60*60*1000))
-    expiry = 'expires='+ d.toUTCString()
-    document.cookie = cname + '=' + cvalue + ';' + expiry + ';path=/'
-  }
-}
-
-function delCookie(cname) {
-  var cvalue = getCookie(cname)
-  var expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC'
-  document.cookie = cname + '=' + cvalue + ';' + expiry + ';path=/'
-}
-
-function signin(e) {
-  console.log(e)
-}
-
-function userData() {
+  
 
 }
+
+function login() {
+  var user = document.getElementById('user').value
+  var pass = document.getElementById('pass').value
+
+  getUserID(user)
+}
+
+
 
 function display() {
 
