@@ -1,7 +1,7 @@
 /* Mekan-X main script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181104
+* Changed 20181109
 *
 * Acknowledgments:
 * > Usage of the pbkdf2 function by Parvez Anandam (BSD License) which uses the sha1 by Paul Johnston
@@ -12,6 +12,7 @@ main()
 
 function main () {
   cookies()
+  dbDataInit()
   display()
 }
 
@@ -22,7 +23,7 @@ function cookies() {
     pageLogin()
   }
   else {
-    userData()
+    dbUserData()
   }
 }
 
@@ -30,7 +31,13 @@ function signin() {
   var user = document.getElementById('user').value
   var pass = document.getElementById('pass').value
 
-  
+  //checkString(value, description, empty allowed(true|false), minLength, maxLength, minAlpha, maxAlpha, minLower, maxLower, minUpper, maxUpper, minNum, maxNum, minSpace, maxSpace, minSymbol, maxSymbol)
+  checkString(user, 'User Name', false, 1, 16, 0, 16, 0, 16, 0, 16, 0, 16, 0, 1, 0, 16)
+  checkString(pass, 'Password', false, 8, 64, 2, 64, 1, 64, 1, 64, 1, 64, 0, 64, 1, 64)
+
+  //add server check - central Mekan-X or Company server
+
+
 
 }
 
