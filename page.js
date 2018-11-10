@@ -1,18 +1,18 @@
 /* Mekan-X page display script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181104
+* Changed 20181110
 */
 
 function pageLogin() {
-  clearPage('login')
+  pageClear('login')
   var login = document.getElementById('login')
   var user = document.getElementById('user')
   var pass = document.getElementById('pass')
   login.style.display = 'block'
 }
 
-function clearPage(except) {
+function pageClear(except) {
   var main = document.getElementById('main')
   var divs = main.getElementsByTagName('div')
   var i
@@ -22,4 +22,8 @@ function clearPage(except) {
       divs[i].style.display = 'none'
     }
   }
+}
+
+function pageStatus(status) {
+  document.getElementById('status').innerHTML = status
 }
