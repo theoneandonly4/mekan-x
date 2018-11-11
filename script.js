@@ -1,10 +1,10 @@
 /* Mekan-X main script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181110
+* Changed 20181111
 *
 * Acknowledgments:
-* > Usage of the pbkdf2 function by Parvez Anandam (BSD License) which uses the sha1 by Paul Johnston
+* > Usage of the pbkdf2 function by Parvez Anandam (BSD License) which uses  sha1 by Paul Johnston
 *
 */
 
@@ -19,9 +19,10 @@ function main () {
 function cookies() {
   var user = getCookie('user')
   if (user == '') {
-    pageLogin()
+    pageShow('login', true)
   }
   else {
+    pageShow('logout', true)
     dbUserData()
   }
 }
@@ -74,28 +75,20 @@ function login() {
     var result_callback = function(key) {
       if (key == dbPass) {
         pageStatus('Access Granted')
+        setCookie('user', user)
+        setCookie('pass', pass)
+        pageShow('logout', true)
     }
     else {
       pageStatus('Access Denied')
     }
-  &}
+  }
   saltPass.deriveKey(status_callback, result_callback)
 }
 
-// var userIV = new PBKDF2('mypassword', 'saltines', 1000, 12)
-// var status_callback = function(percent_done) {
-//   document.getElementById('userIV').innerHTML = 'Computed ' + percent_done + '%'
-//   }
-//   var result_callback = function(key) {
-//     document.getElementById('userIV').innerHTML = 'User IV: ' + key
-//   }
-// userIV.deriveKey(status_callback, result_callback)
-//
-// var key256 = new PBKDF2('mypassword', 'saltines', 1000, 32)
-// var status_callback = function(percent_done) {
-//     document.getElementById('256key').innerHTML = 'Computed ' + percent_done + '%'
-//   }
-// var result_callback = function(key) {
-//     document.getElementById('256key').innerHTML = 'AES 256 key: ' + key
-//   }
-// key256.deriveKey(status_callback, result_callback)
+function logout() {
+  delCookie('user')
+  delCookie('pass')
+  pageHide('logout')
+  pageShow('login', true)
+}
