@@ -48,15 +48,20 @@ function signin() {
   //add server check - central Mekan-X or Company server to get User ID
 
   var id = dbGenUserID()
-  dbCreateItem('0', 'User', id)
-  dbCreateItem(id, 'UserName', user)
   var saltPass = new PBKDF2(pass, 'clientSalt', 1000, 12)
   var status_callback = function(percent_done) {
     pageStatus('Hashing & Salting Password: ' + percent_done + '%')
   }
   var result_callback = function(key) {
-    pageStatus('User Created Locally')
-    dbCreateItem(id, 'Password', key)
+    cryptGenerateKeyAndIV(id, user, pass, genDone) // TODO: include all data in a 'main' object for passing through functions
+    function genDone(crypt) {
+      console.log(crypt)
+      // dbCreateItem('0', 'User', id)
+      // dbCreateItem(id, 'UserName', user)
+      // dbCreateItem(id, 'Password', key)
+      // pageStatus('User Created Locally')
+    }
+
   }
   saltPass.deriveKey(status_callback, result_callback)
 }
