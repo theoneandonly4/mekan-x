@@ -1,10 +1,9 @@
 /* Mekan-X main script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181111
+* Changed 20181117
 *
 * Acknowledgments:
-* > Usage of the pbkdf2 function by Parvez Anandam (BSD License) which uses  sha1 by Paul Johnston
 *
 */
 
@@ -44,7 +43,6 @@ function signin() {
     return false
   }
 
-
   //add server check - central Mekan-X or Company server to get User ID
 
   var id = dbGenUserID()
@@ -54,29 +52,13 @@ function signin() {
     pass: pass
   }
 
-  cryptPass(userObj, cryptedPass)
-  function cryptedPass(obj) {
-    console.log(obj)
+  cryptEn(userObj, userObj.pass ,cryptedPass)
+  function cryptedPass(result) {
+    dbCreateItem('0', 'User', id, false)
+    dbCreateItem(id, 'UserName', user, false)
+    dbCreateItem(id, 'Password', result, true)
+    pageStatus('User Created Locally')
   }
-
-//   var saltPass = new PBKDF2(pass, 'clientSalt', 1000, 12)
-//   var status_callback = function(percent_done) {
-//     pageStatus('Hashing & Salting Password: ' + percent_done + '%')
-//   }
-//   var result_callback = function(key) {
-//     cryptGenerateKeyAndIV(id, user, pass, genDone) // TODO: include all data in a 'main' object for passing through functions
-//     function genDone(crypter) {
-//       console.log(crypter)
-//       cryptImportKey(crypter)
-//       // dbCreateItem('0', 'User', id)
-//       // dbCreateItem(id, 'UserName', user)
-//       // dbCreateItem(id, 'Password', key)
-//       // pageStatus('User Created Locally')
-//     }
-//
-//   }
-//   saltPass.deriveKey(status_callback, result_callback)
-
 
 }
 
@@ -84,25 +66,27 @@ function login() {
   var user = document.getElementById('user').value
   var pass = document.getElementById('pass').value
 
-  var userID = dbGetID('UserName', user)
-  var dbPass = dbGetValue(userID, 'Password')
-  pageStatus(userID)
-  var saltPass = new PBKDF2(pass, 'clientSalt', 1000, 12)
-  var status_callback = function(percent_done) {
-    pageStatus('Hashing & Salting Password: ' + percent_done + '%')
-    }
-    var result_callback = function(key) {
-      if (key == dbPass) {
-        pageStatus('Access Granted')
-        setCookie('user', user)
-        setCookie('pass', pass)
-        pageShow('logout', true)
+  var id = dbGetID('UserName', user)
+  var dbPass = dbGetValue(id, 'Password')
+
+  var userObj = {
+    id: id,
+    user: user,
+    pass: pass
+  }
+
+  cryptDe(userObj, dbPass ,cryptedPass)
+  function cryptedPass(result) {
+    if (result == pass) {
+      pageStatus('Access Granted')
+      setCookie('user', user)
+      setCookie('pass', pass)
+      pageShow('logout', true)
     }
     else {
       pageStatus('Access Denied')
     }
   }
-  saltPass.deriveKey(status_callback, result_callback)
 }
 
 function logout() {
