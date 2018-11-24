@@ -1,7 +1,7 @@
 /* Mekan-X main script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181117
+* Changed 20181124
 *
 * Acknowledgments:
 *
@@ -52,15 +52,45 @@ function signin() {
     pass: pass
   }
 
-  cryptEn(userObj, userObj.pass ,cryptedPass)
-  function cryptedPass(result) {
-    dbCreateItem('0', 'User', id, false)
-    dbCreateItem(id, 'UserName', user, false)
-    dbCreateItem(id, 'Password', result, true)
-    pageStatus('User Created Locally')
-  }
+  // cryptEn(userObj, userObj.pass ,cryptedPass)
 
+  var uek = {}
+  var pek = {}
+  var wuek = {}
+
+  cryptGen(fuek) // Generate User Encryption Key
+  function fuek(key, salt) {
+    uek.key = key
+    uek.salt = salt
+    cryptDerive(userObj, fpek) // Derive Password Encryption Key
+  }
+  function fpek(key, salt) {
+    pek.key = key
+    pek.salt = salt
+    cryptWrap(uek.key, pek.key, pek.salt, fwuek) // Wrap User Encryption Key with Password Encryption Key
+  }
+  function fwuek(wKey) {
+    wuek.key = wKey
+    cryptEncrypt(uek.salt, pek.key, pek.salt, fueks) // Crypt User Encryption Salt with Password Encryption Key
+  }
+  function fueks(cData) {
+    wuek.salt = cData
+    cryptEncrypt(userObj.pass, uek.key, uek.salt, cryptedPass) // Crypt User Password with User Encryption Key
+  }
+  function cryptedPass(result) {
+    //Create User in LocalStorage
+    dbCreateItem('0', 'User', userObj.id, false)
+    dbCreateItem(id, 'UserName', userObj.user, false)
+    dbCreateItem(id, 'Password', result, true)
+    dbCreateItem(id, 'UEK', uek, true)
+    pageStatus('User Created Locally')
+    console.log(uek)
+    console.log(pek)
+    console.log(wuek)
+  }
 }
+
+// TODO: fix issue that uek.key is not stored properly
 
 function login() {
   var user = document.getElementById('user').value

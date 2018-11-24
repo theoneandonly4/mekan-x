@@ -1,8 +1,13 @@
 /* Mekan-X page display script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181111
+* Changed 20181124
 */
+
+// > issue with below function: substitutes page.js 9:2 as the origin of the log for all logs
+// function log(text) {
+//   console.log((new Date).toLocaleTimeString() + ': ' + text)
+// }
 
 function pageClear(except) {
   var main = document.getElementById('main')
