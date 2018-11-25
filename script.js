@@ -82,15 +82,10 @@ function signin() {
     dbCreateItem('0', 'User', userObj.id, false)
     dbCreateItem(id, 'UserName', userObj.user, false)
     dbCreateItem(id, 'Password', result, true)
-    dbCreateItem(id, 'UEK', uek, true)
+    dbCreateItem(id, 'UEK', wuek, true)
     pageStatus('User Created Locally')
-    console.log(uek)
-    console.log(pek)
-    console.log(wuek)
   }
 }
-
-// TODO: fix issue that uek.key is not stored properly
 
 function login() {
   var user = document.getElementById('user').value
@@ -98,6 +93,10 @@ function login() {
 
   var id = dbGetID('UserName', user)
   var dbPass = dbGetValue(id, 'Password')
+  var wuek = dbGetValue(id, 'UEK')
+  var uek = {}
+  var pek = {}
+  var sek = {}
 
   var userObj = {
     id: id,
@@ -105,13 +104,36 @@ function login() {
     pass: pass
   }
 
-  cryptDe(userObj, dbPass ,cryptedPass)
-  function cryptedPass(result) {
+  cryptDerive(userObj, fpek) // Derive Password Encryption Key
+  function fpek(key, salt) {
+    pek.key = key
+    pek.salt = salt
+    cryptUnwrap(wuek.key, pek.key, pek.salt, fwuek)
+  }
+  function fwuek(key) {
+    uek.key = key
+    cryptDecrypt(wuek.salt, pek.key, pek.salt, false, fuek)
+  }
+  function fuek(dData) {
+    uek.salt = dData
+    cryptDecrypt(dbPass, uek.key, uek.salt, true, decryptedPass)
+  }
+  function decryptedPass(result) {
     if (result == pass) {
       pageStatus('Access Granted')
-      setCookie('user', user)
-      setCookie('pass', pass)
-      pageShow('logout', true)
+      var cookieObj = {
+        id: + new Date(),
+        user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' '),navigator.userAgent.length),
+        pass: Math.random().toString(36).substring(7) //TODO: fix random generation
+      }
+      console.log(cookieObj)
+
+      //TODO: Derivekey from cookieObj / crypt pass and pek.salt with derived key - store in LS.crypt (replace)
+      //TODO; create session cookies with 5/10 mins expiry containing cookieObj
+
+      // setCookie('user', user)
+      // setCookie('pass', pass)
+      // pageShow('logout', true)
     }
     else {
       pageStatus('Access Denied')
