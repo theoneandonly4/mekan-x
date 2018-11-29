@@ -96,7 +96,9 @@ function login() {
   var wuek = dbGetValue(id, 'UEK')
   var uek = {}
   var pek = {}
+  var wpek = {}
   var sek = {}
+  var cookieObj = {}
 
   var userObj = {
     id: id,
@@ -121,24 +123,45 @@ function login() {
   function decryptedPass(result) {
     if (result == pass) {
       pageStatus('Access Granted')
-      var cookieObj = {
+      cookieObj = {
         id: + new Date(),
-        user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' '),navigator.userAgent.length),
-        pass: Math.random().toString(36).substring(7) //TODO: fix random generation
+        user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' ') + 1, navigator.userAgent.length),
+        pass: Math.random().toString(36).substring(2, 10)
       }
-      console.log(cookieObj)
-
-      //TODO: Derivekey from cookieObj / crypt pass and pek.salt with derived key - store in LS.crypt (replace)
-      //TODO; create session cookies with 5/10 mins expiry containing cookieObj
-
-      // setCookie('user', user)
-      // setCookie('pass', pass)
-      // pageShow('logout', true)
+      cryptDerive(cookieObj, fsek)
     }
     else {
       pageStatus('Access Denied')
     }
   }
+  function fsek(key, salt) {
+    sek.key = key
+    sek.salt = salt
+
+    cryptWrap(pek.key, sek.key, sek.salt, fwpek)
+  }
+  function fwpek(wKey) {
+    wpek.key = wKey
+    cryptEncrypt(pek.salt, sek.key, sek.salt, fpeks)
+  }
+  function fpeks(cData) {
+    wpek.salt = cData
+    localStorage.crypt = [ wpek.key, wpek.salt ] //Correct TODO
+    setCookie('ID', user)
+    setCookie('session', cookieObj.id, 300000)
+    setCookie('token', cookieObj.pass, 300000)
+    pageStatus('Access Granted - Session set')
+    pageShow('logout', true)
+
+
+    console.log(cookieObj)
+    console.log(pek)
+    console.log(sek)
+    console.log(wpek)
+  }
+
+  //TODO; create session cookies with 5/10 mins expiry containing cookieObj
+
 }
 
 function logout() {
