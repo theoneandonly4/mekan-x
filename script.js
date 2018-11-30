@@ -16,13 +16,13 @@ function main () {
 
 
 function cookies() {
-  var user = getCookie('user')
-  if (user == '') {
+  var session = getCookie('session')
+  if (session == '') {
     pageShow('login', true)
   }
   else {
     pageShow('logout', true)
-    dbUserData()
+    getSession(setSession)
   }
 }
 
@@ -37,6 +37,7 @@ function signin() {
     return false
   }
 
+  //checkString(value, description, empty allowed(true|false), minLength, maxLength, minAlpha, maxAlpha, minLower, maxLower, minUpper, maxUpper, minNum, maxNum, minSpace, maxSpace, minSymbol, maxSymbol)
   var checkPass = checkString(pass, 'Password', false, 8, 64, 2, 64, 1, 64, 1, 64, 1, 64, 0, 64, 1, 64)
   if (checkPass != true) {
     pageStatus(checkPass)
@@ -96,9 +97,9 @@ function login() {
   var wuek = dbGetValue(id, 'UEK')
   var uek = {}
   var pek = {}
-  var wpek = {}
-  var sek = {}
-  var cookieObj = {}
+  // var cookieObj = {}
+  // var sek = {}
+  // var wpek = {}
 
   var userObj = {
     id: id,
@@ -123,17 +124,27 @@ function login() {
   function decryptedPass(result) {
     if (result == pass) {
       pageStatus('Access Granted')
-      cookieObj = {
-        id: + new Date(),
-        user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' ') + 1, navigator.userAgent.length),
-        pass: Math.random().toString(36).substring(2, 10)
-      }
-      cryptDerive(cookieObj, fsek)
+      setSession(user, pek)
     }
     else {
       pageStatus('Access Denied')
     }
   }
+}
+
+function setSession(user, pek) {
+  console.log('Setting Session with')
+  console.log('User= ' + user)
+  console.log('PEK=')
+  console.log(pek)
+  var sek = {}
+  var wpek = {}
+  cookieObj = {
+    id: + new Date(),
+    user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' ') + 1, navigator.userAgent.length),
+    pass: Math.random().toString(36).substring(2, 10)
+  }
+  cryptDerive(cookieObj, fsek)
   function fsek(key, salt) {
     sek.key = key
     sek.salt = salt
@@ -146,27 +157,58 @@ function login() {
   }
   function fpeks(cData) {
     wpek.salt = cData
-    localStorage.crypt = [ wpek.key, wpek.salt ] //Correct TODO
-    setCookie('ID', user)
+    localStorage.crypt = JSON.stringify(wpek)
+    setCookie('user', user)
     setCookie('session', cookieObj.id, 300000)
     setCookie('token', cookieObj.pass, 300000)
     pageStatus('Access Granted - Session set')
     pageShow('logout', true)
-
-
-    console.log(cookieObj)
-    console.log(pek)
-    console.log(sek)
-    console.log(wpek)
+    display('UserName', user)
   }
+}
 
-  //TODO; create session cookies with 5/10 mins expiry containing cookieObj
-
+function getSession(res) {
+  var uek = {}
+  var pek = {}
+  var wpek = JSON.parse(localStorage.crypt)
+  var sek = {}
+  var cookieObj = {
+    id: getCookie('session'),
+    user: navigator.userAgent.substring(navigator.userAgent.lastIndexOf(' ') + 1, navigator.userAgent.length),
+    pass: getCookie('token')
+  }
+  var user = getCookie('user')
+  console.log(user)
+  console.log('Getting Session with Object:')
+  console.log(cookieObj)
+  cryptDerive(cookieObj, fsek)
+  function fsek(key, salt) {
+    sek.key = key
+    sek.salt = salt
+    console.log('SEK=')
+    console.log(sek)
+    cryptUnwrap(wpek.key, sek.key, sek.salt, fpek)
+  }
+  function fpek(key) {
+    pek.key = key
+    cryptDecrypt(wpek.salt, sek.key, sek.salt, false, fpeks)
+  }
+  function fpeks(dData) {
+    pek.salt = dData
+    console.log('PEK=')
+    console.log(pek)
+    res(user, pek)
+  }
 }
 
 function logout() {
-  delCookie('user')
-  delCookie('pass')
+  delCookie('session')
+  delCookie('token')
   pageHide('logout')
   pageShow('login', true)
+}
+
+function display(what, id) {
+  var userID = dbGetID(what, id)
+  console.log('Starting display of Item: ' + userID)
 }
