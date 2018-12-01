@@ -22,6 +22,10 @@ function cookies() {
   }
   else {
     pageShow('logout', true)
+    if (!localStorage.view) {
+      var userID = dbGetID('UserName', getCookie('user'))
+      localStorage.view = JSON.stringify('user/' + userID)
+    }
     getSession(setSession)
   }
 }
@@ -82,8 +86,8 @@ function signin() {
     //Create User in LocalStorage
     dbCreateItem('0', 'User', userObj.id, false)
     dbCreateItem(id, 'UserName', userObj.user, false)
-    dbCreateItem(id, 'Password', result, true)
-    dbCreateItem(id, 'UEK', wuek, true)
+    dbCreateItem(id, 'Password', result, false)
+    dbCreateItem(id, 'UEK', wuek, false)
     pageStatus('User Created Locally')
   }
 }
@@ -97,9 +101,6 @@ function login() {
   var wuek = dbGetValue(id, 'UEK')
   var uek = {}
   var pek = {}
-  // var cookieObj = {}
-  // var sek = {}
-  // var wpek = {}
 
   var userObj = {
     id: id,
@@ -133,10 +134,6 @@ function login() {
 }
 
 function setSession(user, pek) {
-  console.log('Setting Session with')
-  console.log('User= ' + user)
-  console.log('PEK=')
-  console.log(pek)
   var sek = {}
   var wpek = {}
   cookieObj = {
@@ -148,7 +145,6 @@ function setSession(user, pek) {
   function fsek(key, salt) {
     sek.key = key
     sek.salt = salt
-
     cryptWrap(pek.key, sek.key, sek.salt, fwpek)
   }
   function fwpek(wKey) {
@@ -161,9 +157,13 @@ function setSession(user, pek) {
     setCookie('user', user)
     setCookie('session', cookieObj.id, 300000)
     setCookie('token', cookieObj.pass, 300000)
-    pageStatus('Access Granted - Session set')
+    pageStatus('Session Updated')
     pageShow('logout', true)
-    display('UserName', user)
+    if (!localStorage.view) {
+      var userID = dbGetID('UserName', user)
+      localStorage.view = JSON.stringify('user/' + userID)
+    }
+    display()
   }
 }
 
@@ -178,15 +178,10 @@ function getSession(res) {
     pass: getCookie('token')
   }
   var user = getCookie('user')
-  console.log(user)
-  console.log('Getting Session with Object:')
-  console.log(cookieObj)
   cryptDerive(cookieObj, fsek)
   function fsek(key, salt) {
     sek.key = key
     sek.salt = salt
-    console.log('SEK=')
-    console.log(sek)
     cryptUnwrap(wpek.key, sek.key, sek.salt, fpek)
   }
   function fpek(key) {
@@ -195,8 +190,6 @@ function getSession(res) {
   }
   function fpeks(dData) {
     pek.salt = dData
-    console.log('PEK=')
-    console.log(pek)
     res(user, pek)
   }
 }
@@ -206,9 +199,14 @@ function logout() {
   delCookie('token')
   pageHide('logout')
   pageShow('login', true)
+  pageStatus('Logout Successful')
 }
 
-function display(what, id) {
-  var userID = dbGetID(what, id)
-  console.log('Starting display of Item: ' + userID)
+function display() {
+  var view = JSON.parse(localStorage.view)
+  console.log('Starting display for view ' + view)
+  var viewSplit = view.split('/')
+  console.log(viewSplit)
+  dbGetChildren(viewSplit[0], viewSplit[1])
+
 }
