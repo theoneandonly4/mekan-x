@@ -1,13 +1,8 @@
 /* Mekan-X page display script
 * By Pierre-Etienne ALBINET
 * Started 20181026
-* Changed 20181124
+* Changed 20181203
 */
-
-// > issue with below function: substitutes page.js 9:2 as the origin of the log for all logs
-// function log(text) {
-//   console.log((new Date).toLocaleTimeString() + ': ' + text)
-// }
 
 function pageClear(except) {
   var main = document.getElementById('main')
@@ -21,7 +16,19 @@ function pageClear(except) {
 }
 
 function pageStatus(status) {
-  document.getElementById('status').innerHTML = status
+  document.getElementById('status').innerHTML = ' - ' + status
+}
+
+function pageUser(userName) {
+  item = document.getElementById('userName')
+  item.innerHTML = ' - Logged in as ' + userName + ' '
+  item.style.display = 'inline-block'
+}
+
+function pageSessionTime(s) {
+  item = document.getElementById('sessionTime')
+  item.innerHTML = '(' + s + ') '
+  item.style.display = 'inline-block'
 }
 
 function pageShow(id, clear) {
@@ -29,7 +36,7 @@ function pageShow(id, clear) {
     pageClear(id)
   }
   item = document.getElementById(id)
-  item.style.display = 'block'
+  item.style.display = 'inline-block'
 }
 
 function pageHide(id) {

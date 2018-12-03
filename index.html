@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-US">
 
+<!-- Mekan-X HTML Page
+By Pierre-Etienne ALBINET
+Started 20181026
+Changed 20181203
+-->
+
 <head profile="http://www.w3.org/2005/10/profile">
   <link rel="icon"
     type="image/jpg"
@@ -11,9 +17,15 @@
 </head>
 
 <body>
+
   <div id="topbar">
-    <button id="logout" type="button" onclick="logout()" style="display: none">Logout</button>
+    <span> <a href="index.html">Mekan-X</a> </span>
+    <span id="status"></span>
+    <span id="userName"></span>
+    <span id="sessionTime"></span>
+    <span id="logout" type="button" onclick="logout()" style="display: none">Logout</span>
   </div>
+
   <div id="main">
 
     <div id="login" style="display: none">
@@ -27,7 +39,6 @@
     </div>
 
   </div>
-  <div id="status"></div>
 
   <script src="./lib/cookies.js"></script>
   <script src="./lib/checkFunctions.js"></script>

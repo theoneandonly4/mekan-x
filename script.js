@@ -7,6 +7,8 @@
 *
 */
 
+var sTimer //Must be global: to be cleared by Logout function
+
 main()
 
 function main () {
@@ -158,6 +160,8 @@ function setSession(user, pek) {
     setCookie('session', cookieObj.id, 300000)
     setCookie('token', cookieObj.pass, 300000)
     pageStatus('Session Updated')
+    pageUser(user)
+    sessionTimer(300)
     pageShow('logout', true)
     if (!localStorage.view) {
       var userID = dbGetID('UserName', user)
@@ -194,19 +198,41 @@ function getSession(res) {
   }
 }
 
-function logout() {
+function logout(timeout) {
   delCookie('session')
   delCookie('token')
+  localStorage.removeItem('crypt') //Not working but not an priority issue
   pageHide('logout')
+  pageHide('sessionTime')
+  clearInterval(sTimer)
+  pageHide('userName')
   pageShow('login', true)
-  pageStatus('Logout Successful')
+  if (!timeout) {
+    pageStatus('Logout Successful')
+  }
+  else {
+    pageStatus('Session Timed Out')
+  }
+}
+
+function sessionTimer(s) {
+  clearInterval(sTimer)
+  sTimer = setInterval(exec, 1000)
+  function exec() {
+    pageSessionTime(s)
+    s--
+    if (s == 0) {
+      clearInterval(sTimer)
+      logout(true)
+    }
+  }
 }
 
 function display() {
   var view = JSON.parse(localStorage.view)
   console.log('Starting display for view ' + view)
   var viewSplit = view.split('/')
-  console.log(viewSplit)
-  dbGetChildren(viewSplit[0], viewSplit[1])
+  var tree = dbGetTree(viewSplit[1], 1)
+  console.log(tree)
 
 }
