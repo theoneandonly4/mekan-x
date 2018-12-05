@@ -43,3 +43,22 @@ function pageHide(id) {
   item = document.getElementById(id)
   item.style.display = 'none'
 }
+
+function pageTree(tree, levels) {
+  var content = document.getElementById('content')
+  var table = document.createElement('table')
+  var i, j
+  for (i = 0; i <= levels; i++) {
+    var row = document.createElement('tr')
+    for (j = 0; j < tree.length; j++) {
+      if (tree[j].level == i) {
+        var col = document.createElement('td')
+        col.innerHTML = tree[j].item.type + ':<br />' + tree[j].item.value
+        row.appendChild(col)
+      }
+    }
+    table.appendChild(row)
+  }
+  content.appendChild(table)
+  pageShow('content', true)
+}

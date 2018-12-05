@@ -86,7 +86,8 @@ function signin() {
   }
   function cryptedPass(result) {
     //Create User in LocalStorage
-    dbCreateItem('0', 'User', userObj.id, false)
+    var nullParent = 0
+    dbCreateItem(nullParent, 'User', userObj.id, false)
     dbCreateItem(id, 'UserName', userObj.user, false)
     dbCreateItem(id, 'Password', result, false)
     dbCreateItem(id, 'UEK', wuek, false)
@@ -232,7 +233,10 @@ function display() {
   var view = JSON.parse(localStorage.view)
   console.log('Starting display for view ' + view)
   var viewSplit = view.split('/')
-  var tree = dbGetTree(viewSplit[1], 1)
-  console.log(tree)
-
+  viewID = parseInt(viewSplit[1])
+  dbGetTree(viewID, 1, ftree)
+  function ftree(tree) {
+    console.log(tree)
+    pageTree(tree, 1)
+  }
 }
