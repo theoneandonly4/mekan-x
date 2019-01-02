@@ -46,6 +46,9 @@ function pageHide(id) {
 
 function pageTree(tree, levels) {
   var content = document.getElementById('content')
+  while (content.firstChild) {
+    content.removeChild(content.firstChild)
+  }
   var table = document.createElement('table')
   var i, j
   for (i = 0; i <= levels; i++) {

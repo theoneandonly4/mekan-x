@@ -12,8 +12,8 @@ var sTimer //Must be global: to be cleared by Logout function
 main()
 
 function main () {
-  cookies()
   dbDataInit()
+  cookies()
 }
 
 
